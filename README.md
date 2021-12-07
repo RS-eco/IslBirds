@@ -34,10 +34,14 @@ gc()
 colnames(islands)
 
 # Select certain islands by ulm_ID
-islands %>% filter(ulm_ID %in% c(5224, 53611, 9827, 374)) %>% select(-geometry)
+islands %>%
+    filter(ulm_ID %in% c(5224, 53611, 9827, 374)) %>%
+    select(-geometry)
 
 # Select island by English Name
-islands %>% filter(NAME_ENGLI == "Cyprus") %>% select(-geometry)
+islands %>%
+    filter(NAME_ENGLI == "Cyprus") %>%
+    select(-geometry)
 ```
 
 ### Island bird species numbers (BirdLife)
@@ -58,20 +62,32 @@ and data for individual islands can be accessed by:
 length(unique(island_birds$SCINAME))
 
 # Extract info for certain islands by ulm_id
-island_birds %>% filter(ulm_id %in% c(81061, 52224, 5224, 53611, 9827, 374)) %>% 
+island_birds %>%
+    filter(ulm_id %in% c(81061, 52224, 5224, 53611, 9827, 374)) %>%
     summarise(n_distinct(SCINAME))
-# Christmas Island, Cyprus, French Southern Territories, La Reunion, Hawaii, Isla
-# Hermite - Chile
+# Christmas Island, Cyprus, French Southern Territories, La Reunion, Hawaii,
+# Isla Hermite - Chile
 
 # Extract number of bird species for Christmas island that cover more than 25 %
 # of the island
-island_birds %>% filter(ulm_id == 81061) %>% filter(perc_cover >= 25) %>% summarise(n_distinct(SCINAME))
+island_birds %>%
+    filter(ulm_id == 81061) %>%
+    filter(perc_cover >= 25) %>%
+    summarise(n_distinct(SCINAME))
 
 # Extract number of bird species for Cyprus for different percentage coverage
 # values
-island_birds %>% filter(ulm_id == "52224") %>% summarise(n_distinct(SCINAME))
-island_birds %>% filter(ulm_id == "52224") %>% filter(perc_cover >= 25) %>% summarise(n_distinct(SCINAME))
-island_birds %>% filter(ulm_id == "52224") %>% filter(perc_cover >= 50) %>% summarise(n_distinct(SCINAME))
+island_birds %>%
+    filter(ulm_id == "52224") %>%
+    summarise(n_distinct(SCINAME))
+island_birds %>%
+    filter(ulm_id == "52224") %>%
+    filter(perc_cover >= 25) %>%
+    summarise(n_distinct(SCINAME))
+island_birds %>%
+    filter(ulm_id == "52224") %>%
+    filter(perc_cover >= 50) %>%
+    summarise(n_distinct(SCINAME))
 ```
 
 ### Island bird species numbers (eBird)
@@ -88,17 +104,61 @@ load("data/ebd_largeislands.rda")
 
 ### Island geographic distances
 
+#### Explanation of island distance variables
+
+ulm\_ID = ulm\_ID of island as provided by
+GADM\_islands\_join\_names\_area\_gmmc\_dist.dbf
+
+d\_orig = distance to island as provided by
+GADM\_islands\_join\_names\_area\_gmmc\_dist.dbf
+
+d\_centroid = distance of island centroid to mainland based on points
+underlying GADM\_mainlands\_tiles\_simple\_100m.rda
+
+d\_centroid\_rough = rough estimate of distance of island centroid to
+mainland based on points of a simplified mainland version
+(fortify(GADM\_mainlands\_tiles\_simple\_100m.rda))
+
+d\_coast = distance of island coordinates to mainland based on points
+underlying GADM\_mainlands\_tiles\_simple\_100m.rda
+
+d\_coast\_rough = rough estimate of distance of island based on points
+underlying GADM\_islands\_join\_names\_area\_gmmc\_dist.dbf to mainland
+based on points of a simplified mainland version
+(fortify(GADM\_mainlands\_tiles\_simple\_100m.rda))
+
+d\_main = distance of island to mainland based on actual shapes/polygons
+of GADM\_mainlands\_tiles\_simple\_100m.rda and
+GADM\_islands\_join\_names\_area\_gmmc\_dist.dbf
+
+d\_main\_rough = same as d\_coast\_rought (can be deleted!)
+
+d\_main\_1ht = distance of island to mainland & islands larger than 1
+hectare based on actual shapes/polygons of
+GADM\_mainlands\_tiles\_simple\_100m.rda and
+GADM\_islands\_join\_names\_area\_gmmc\_dist.dbf
+
+d\_main\_1ht\_rough = rough estimate of distance of island to mainland &
+islands larger than 1 hectare based on points underlying
+GADM\_islands\_join\_names\_area\_gmmc\_dist.dbf to mainland based on
+points of a simplified mainland version
+(fortify(GADM\_mainlands\_tiles\_simple\_100m.rda))
+
+#### Load and access distance data
+
 Island geographic distances were calculated using the R-code, located
 under: “data-raw/06\_island\_isolation.R”
 
 ``` r
 load("data/dist_islands_df.rda")
 load("data/islands_df.rda")
-islands_df %>% filter(Island %in% c("Antipodes Island", "New Caledonia", "East Siberian Sea Islands", 
-    "Sardinia", "Ostrov Sakhalin", "Bathurst Island", "Sri Lanka"))
+islands_df %>%
+    filter(Island %in% c("Antipodes Island", "New Caledonia", "East Siberian Sea Islands",
+        "Sardinia", "Ostrov Sakhalin", "Bathurst Island", "Sri Lanka"))
 
 # Check Anitpodes islands
-dist_islands_df %>% filter(ulm_ID == 4946)
+dist_islands_df %>%
+    filter(ulm_ID == 4946)
 ```
 
 ### Marine regions and IHO world seas
@@ -111,10 +171,10 @@ under: “data-raw/07\_marineregions.R” and can be loaded into R, using:
 load("data/marineregions.rda")
 
 library(ggplot2)
-ggplot() + geom_sf(data = marineregions, aes(fill = as.factor(Realm2)), colour = NA) + 
-    scale_fill_manual(values = (ggsci::pal_d3("category20"))(8), name = "Realm", 
-        guide = guide_legend(nrow = 4)) + labs(x = "", y = "") + theme_minimal() + 
-    coord_sf(xlim = c(-180, 180), ylim = c(-86, 90), expand = FALSE, ndiscr = FALSE) + 
+ggplot() + geom_sf(data = marineregions, aes(fill = as.factor(Realm2)), colour = NA) +
+    scale_fill_manual(values = (ggsci::pal_d3("category20"))(8), name = "Realm",
+        guide = guide_legend(nrow = 4)) + labs(x = "", y = "") + theme_minimal() +
+    coord_sf(xlim = c(-180, 180), ylim = c(-86, 90), expand = FALSE, ndiscr = FALSE) +
     theme(legend.position = "bottom", axis.title.y = element_text(angle = 0, hjust = 0))
 ```
 
@@ -127,10 +187,10 @@ under: “data-raw/08\_iho\_worldseas.R” and can be loaded into R, using:
 ``` r
 load("data/world_seas.rda")
 
-ggplot() + geom_sf(data = world_seas, aes(fill = Ocean), colour = NA) + labs(x = "", 
-    y = "") + theme_minimal() + coord_sf(xlim = c(-180, 180), ylim = c(-86, 90), 
-    expand = FALSE, ndiscr = FALSE) + theme(legend.position = "bottom", axis.title.y = element_text(angle = 0, 
-    hjust = 0)) + coord_sf(ndiscr = 0)
+ggplot() + geom_sf(data = world_seas, aes(fill = Ocean), colour = NA) + labs(x = "",
+    y = "") + theme_minimal() + coord_sf(xlim = c(-180, 180), ylim = c(-86, 90),
+    ndiscr = FALSE, expand = FALSE) + theme(legend.position = "bottom", axis.title.y = element_text(angle = 0,
+    hjust = 0))
 ```
 
 ![](figures/majoroceans-1.png)<!-- -->

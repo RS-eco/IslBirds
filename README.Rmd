@@ -94,6 +94,30 @@ load("data/ebd_largeislands.rda")
 
 ### Island geographic distances
 
+#### Explanation of island distance variables
+
+ulm_ID = ulm_ID of island as provided by GADM_islands_join_names_area_gmmc_dist.dbf
+
+d_orig = distance to island as provided by GADM_islands_join_names_area_gmmc_dist.dbf
+
+d_centroid = distance of island centroid to mainland based on points underlying GADM_mainlands_tiles_simple_100m.rda
+
+d_centroid_rough = rough estimate of distance of island centroid to mainland based on points of a simplified mainland version (fortify(GADM_mainlands_tiles_simple_100m.rda))
+
+d_coast = distance of island coordinates to mainland based on points underlying GADM_mainlands_tiles_simple_100m.rda
+
+d_coast_rough = rough estimate of distance of island based on points underlying GADM_islands_join_names_area_gmmc_dist.dbf to mainland based on points of a simplified mainland version (fortify(GADM_mainlands_tiles_simple_100m.rda))
+
+d_main = distance of island to mainland based on actual shapes/polygons of GADM_mainlands_tiles_simple_100m.rda and GADM_islands_join_names_area_gmmc_dist.dbf
+
+d_main_rough = same as d_coast_rought (can be deleted!)
+
+d_main_1ht = distance of island to mainland & islands larger than 1 hectare based on actual shapes/polygons of GADM_mainlands_tiles_simple_100m.rda and GADM_islands_join_names_area_gmmc_dist.dbf
+
+d_main_1ht_rough = rough estimate of distance of island to mainland & islands larger than 1 hectare based on points underlying GADM_islands_join_names_area_gmmc_dist.dbf to mainland based on points of a simplified mainland version (fortify(GADM_mainlands_tiles_simple_100m.rda))
+
+#### Load and access distance data
+
 Island geographic distances were calculated using the R-code, located under: "data-raw/06_island_isolation.R"
 
 ```{r}
@@ -129,9 +153,8 @@ load("data/world_seas.rda")
 
 ggplot() + geom_sf(data=world_seas, aes(fill=Ocean), colour=NA) + 
   labs(x="", y="") + theme_minimal() + 
-  coord_sf(xlim=c(-180,180), ylim=c(-86,90), expand = FALSE, ndiscr=FALSE) + 
-  theme(legend.position = "bottom", axis.title.y = element_text(angle=0, hjust=0)) + 
-  coord_sf(ndiscr=0)
+  coord_sf(xlim=c(-180,180), ylim=c(-86,90), ndiscr=FALSE, expand = FALSE) + 
+  theme(legend.position = "bottom", axis.title.y = element_text(angle=0, hjust=0))
 ```
 
 ### Reading bird species MS Access database into R
